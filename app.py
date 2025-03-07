@@ -20,7 +20,7 @@ except FileNotFoundError:
     st.stop()
 
 columnas_caracteristicas = ['EDAD_CLIENTE', 'DIAS_ATRASO', 'MORATORIOS', 'SALDO_TOTAL',
-                            'IMP_ULTIMO_PAGO', 'MONTO_PAGOS', 'ATRASO_MAXIMO']
+                            'IMP_ULTIMO_PAGO', 'MONTO_PAGOS']
 
 st.title("Predictor de Probabilidad de Pago")
 st.write("Ingresa los datos del cliente para predecir la probabilidad de que pague su deuda.")
@@ -33,7 +33,6 @@ with st.form(key='predict_form'):
     saldo_total = st.number_input("Saldo total", min_value=0.0, value=10000.0, step=100.0)
     imp_ultimo_pago = st.number_input("Importe último pago", min_value=0.0, value=0.0, step=10.0)
     monto_pagos = st.number_input("Monto total de pagos", min_value=0.0, value=0.0, step=100.0)
-    atraso_maximo = st.number_input("Atraso máximo (días)", min_value=0, value=0)
 
     submit_button = st.form_submit_button(label="Calcular Probabilidad")
 
@@ -44,8 +43,7 @@ if submit_button:
         'MORATORIOS': moratorios,
         'SALDO_TOTAL': saldo_total,
         'IMP_ULTIMO_PAGO': imp_ultimo_pago,
-        'MONTO_PAGOS': monto_pagos,
-        'ATRASO_MAXIMO': atraso_maximo
+        'MONTO_PAGOS': monto_pagos
     }
     
     cliente_df = pd.DataFrame([datos_cliente], columns=columnas_caracteristicas)

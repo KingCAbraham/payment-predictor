@@ -20,7 +20,7 @@ from datetime import datetime, timedelta
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill
 from openpyxl.formatting.rule import CellIsRule
-from openpyxl.utils import get_column_letter  # Nueva importación
+from openpyxl.utils import get_column_letter
 import joblib
 
 # Fecha actual
@@ -49,7 +49,7 @@ def preprocesar_datos(datos):
 
     columnas_caracteristicas = [
         'EDAD_CLIENTE', 'DIAS_ATRASO', 'MORATORIOS', 'SALDO_TOTAL',
-        'IMP_ULTIMO_PAGO', 'MONTO_PAGOS', 'ATRASO_MAXIMO'
+        'IMP_ULTIMO_PAGO', 'MONTO_PAGOS'
     ]
     X = datos[columnas_caracteristicas].copy()
 
@@ -127,14 +127,13 @@ def main():
             worksheet.column_dimensions[col[0].column_letter].width = max_length + 2
 
         headers = [cell.value for cell in worksheet[1]]
-        prob_col_idx = headers.index('PROBABILIDAD_PAGO') + 1  # Índice basado en 1
-        prob_col_letter = get_column_letter(prob_col_idx)  # Convertir a letra válida
+        prob_col_idx = headers.index('PROBABILIDAD_PAGO') + 1
+        prob_col_letter = get_column_letter(prob_col_idx)
 
         red_fill = PatternFill(start_color='FF9999', end_color='FF9999', fill_type='solid')
         yellow_fill = PatternFill(start_color='FFFF99', end_color='FFFF99', fill_type='solid')
         green_fill = PatternFill(start_color='99FF99', end_color='99FF99', fill_type='solid')
 
-        # Usar la letra de columna correcta
         range_string = f'{prob_col_letter}2:{prob_col_letter}{worksheet.max_row}'
         worksheet.conditional_formatting.add(
             range_string,
