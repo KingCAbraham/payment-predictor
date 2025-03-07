@@ -12,6 +12,32 @@ import streamlit as st
 import pandas as pd
 import joblib
 
+# Configuración de la página
+st.set_page_config(
+    page_title="Predictor de Pago",
+    page_icon="💸",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
+
+# Estilo CSS solo para el resultado
+st.markdown("""
+    <style>
+    /* Estilo para el resultado */
+    .resultado {
+        padding: 1em;
+        border-radius: 8px;
+        text-align: center;
+        margin-top: 1.5em;
+        font-size: 1.1em;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# Cargar modelo y escalador
 try:
     modelo = joblib.load('modelo_pago.pkl')
     escalador = joblib.load('escalador_pago.pkl')
@@ -23,8 +49,9 @@ columnas_caracteristicas = ['EDAD_CLIENTE', 'DIAS_ATRASO', 'MORATORIOS', 'SALDO_
                             'IMP_ULTIMO_PAGO', 'MONTO_PAGOS']
 
 st.title("Predictor de Probabilidad de Pago")
-st.write("Ingresa los datos del cliente para predecir la probabilidad de que pague su deuda.")
+st.write("Ingresa los datos del cliente para predecir su probabilidad de pago.")
 
+# Formulario
 with st.form(key='predict_form'):
     st.subheader("Datos del Cliente")
     edad = st.number_input("Edad del cliente", min_value=0, max_value=120, value=30)
@@ -36,6 +63,7 @@ with st.form(key='predict_form'):
 
     submit_button = st.form_submit_button(label="Calcular Probabilidad")
 
+# Procesar y mostrar resultado
 if submit_button:
     datos_cliente = {
         'EDAD_CLIENTE': edad,
@@ -50,10 +78,22 @@ if submit_button:
     cliente_escalado = escalador.transform(cliente_df)
     probabilidad = modelo.predict_proba(cliente_escalado)[0][1] * 100
     
-    st.success(f"Probabilidad de que el cliente pague: **{probabilidad:.2f}%**")
+    # Estilo dinámico para el resultado
     if probabilidad > 70:
-        st.write("Categoría: **Alto**")
+        color_fondo = "#DCFCE7"
+        color_texto = "#166534"
+        categoria = "Alto"
     elif probabilidad > 30:
-        st.write("Categoría: **Medio**")
+        color_fondo = "#FEF9C3"
+        color_texto = "#854D0E"
+        categoria = "Medio"
     else:
-        st.write("Categoría: **Bajo**")
+        color_fondo = "#FEE2E2"
+        color_texto = "#991B1B"
+        categoria = "Bajo"
+
+    st.markdown(
+        f'<div class="resultado" style="background-color: {color_fondo}; color: {color_texto};">'
+        f'Probabilidad de pago: <b>{probabilidad:.2f}%</b><br>Categoría: <b>{categoria}</b></div>',
+        unsafe_allow_html=True
+    )
